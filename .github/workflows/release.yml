@@ -93,17 +93,21 @@ jobs:
       - name: Build ${{ matrix.target }}
         run: make -j"$(nproc)"
 
-      - name: Pack ${{ matrix.target }}
+      - name: Collect ${{ matrix.target }} ROM images
         run: |
           mkdir release
-          tar --zstd -cf "release/ponwrt-${{ matrix.target }}.tar.zst" \
-            -C bin/targets/airoha "${{ matrix.target }}"
+          find "bin/targets/airoha/${{ matrix.target }}" -maxdepth 1 -type f \
+            ! -name 'sha256sums' \
+            ! -name '*.buildinfo' \
+            ! -name 'profiles.json' \
+            -exec cp -t release {} +
+          test -n "$(find release -maxdepth 1 -type f -print -quit)"
 
-      - name: Upload ${{ matrix.target }}
+      - name: Upload ${{ matrix.target }} ROM images
         uses: actions/upload-artifact@v4
         with:
           name: ponwrt-${{ matrix.target }}
-          path: release/*.tar.zst
+          path: release/*
           if-no-files-found: error
           retention-days: 7
 
@@ -115,7 +119,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Download firmware archives
+      - name: Download ROM images
         uses: actions/download-artifact@v4
         with:
           pattern: ponwrt-*
@@ -124,7 +128,8 @@ jobs:
 
       - name: Create checksums
         working-directory: release
-        run: sha256sum *.tar.zst > sha256sums
+        run: |
+          find . -maxdepth 1 -type f -printf '%f\n' | sort | xargs sha256sum > sha256sums
 
       - name: Create GitHub release
         env:
@@ -134,8 +139,7 @@ jobs:
         run: |
           args=(
             "$RELEASE_TAG"
-            release/*.tar.zst
-            release/sha256sums
+            release/*
             --repo "$GITHUB_REPOSITORY"
             --target "$GITHUB_SHA"
             --title "PonWrt $RELEASE_TAG"

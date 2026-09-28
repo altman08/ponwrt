@@ -91,7 +91,13 @@ jobs:
         run: make download -j"$(nproc)"
 
       - name: Build ${{ matrix.target }}
-        run: make -j"$(nproc)"
+        run: |
+          if ! make -j"$(nproc)"; then
+            echo "::group::Detailed package/install failure log"
+            make package/install -j1 V=s || true
+            echo "::endgroup::"
+            exit 1
+          fi
 
       - name: Collect ${{ matrix.target }} ROM images
         run: |

@@ -1,6 +1,6 @@
 # Pin every feed to the latest verified remote commit for reproducible builds.
 src-git packages https://github.com/altman08/immortalwrt-packages.git^216590224d113f17dccd07be4681b0dfdccb4c87
-src-git luci https://github.com/altman08/immortalwrt-luci.git^c00054eb4dcf7777d0ce0b1cc688135d3907fdb9
+src-git luci https://github.com/altman08/immortalwrt-luci.git^d9f7814e699eced050ca698c6aee6100294fdd19
 src-git routing https://github.com/openwrt/routing.git^4b9891b9136259f93294a424507ed24c5e8c1cbd
 src-git telephony https://github.com/openwrt/telephony.git^5d68d53c160a325ea9d03fce393e051573bcc736
 src-git video https://github.com/openwrt/video.git^2baec75e2c07b3bb3ae3b73580a3bd3074818707

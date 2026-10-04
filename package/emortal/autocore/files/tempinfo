@@ -8,7 +8,7 @@ THERMAL_PATH="/sys/class/thermal"
 case "$DISTRIB_TARGET" in
 airoha/*)
 	for sensor in "$IEEE_PATH"/phy*/device/hwmon/hwmon*/temp1_input \
-		"$IEEE_PATH"/phy*/hwmon/hwmon*/temp1_input; do
+		"$IEEE_PATH"/phy*/hwmon*/temp1_input; do
 		[ -r "$sensor" ] || continue
 		reading="$(awk '($1 ~ /^-?[0-9]+$/) { printf "%.1f°C", $1 / 1000 }' "$sensor")"
 		[ -z "$reading" ] || wifi_temp="${wifi_temp:+$wifi_temp }$reading"

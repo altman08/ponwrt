@@ -9,6 +9,7 @@ src-git telephony https://github.com/openwrt/telephony.git
 src-git video https://github.com/openwrt/video.git
 src-git pon_drivers https://github.com/pbs05/openwrt-pon-drivers.git
 src-git pon_userspace https://github.com/pbs05/openwrt-pon-userspace.git
+src-git qwe_luci_app https://github.com/qwe3017/luci-app.git
 src-git luci_app_fakehttp https://github.com/killadm/luci-app-fakehttp.git
 src-git luci_app_fakesip https://github.com/killadm/luci-app-fakesip.git
 #src-git targets https://github.com/openwrt/targets.git

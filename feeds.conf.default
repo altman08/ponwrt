@@ -1,13 +1,16 @@
-# Pin feeds to verified remote revisions (commits or tags) for reproducible builds.
-src-git packages https://github.com/altman08/immortalwrt-packages.git^216590224d113f17dccd07be4681b0dfdccb4c87
-src-git luci https://github.com/altman08/immortalwrt-luci.git^d9f7814e699eced050ca698c6aee6100294fdd19
-src-git routing https://github.com/openwrt/routing.git^4b9891b9136259f93294a424507ed24c5e8c1cbd
-src-git telephony https://github.com/openwrt/telephony.git^5d68d53c160a325ea9d03fce393e051573bcc736
-src-git video https://github.com/openwrt/video.git^816fa8fe0ca759cc5d1ba71af1a716405bf4dda4
-src-git pon_drivers https://github.com/pbs05/openwrt-pon-drivers.git^e5194d2dfd169eef8f4a944fdc3f929e0287b680
-src-git pon_userspace https://github.com/pbs05/openwrt-pon-userspace.git^cce9d756742487b378749c606b30e13ee9b0f093
-src-git luci_app_fakehttp https://github.com/killadm/luci-app-fakehttp.git^ea58414963d26380f79fd7587e518e2b5d5c511a
-src-git luci_app_fakesip https://github.com/killadm/luci-app-fakesip.git^fa78ca4d972f208382fe2c2f95b0b288e377476e
+# Track altman08 packages/luci on dev (not their default branch).
+# Other feeds use their remote default branches: openwrt -> master;
+# pbs05 and killadm -> main (verified when configured).
+# ./scripts/feeds update -a pulls new commits; builds are not pinned to a commit.
+src-git packages https://github.com/altman08/immortalwrt-packages.git;dev
+src-git luci https://github.com/altman08/immortalwrt-luci.git;dev
+src-git routing https://github.com/openwrt/routing.git
+src-git telephony https://github.com/openwrt/telephony.git
+src-git video https://github.com/openwrt/video.git
+src-git pon_drivers https://github.com/pbs05/openwrt-pon-drivers.git
+src-git pon_userspace https://github.com/pbs05/openwrt-pon-userspace.git
+src-git luci_app_fakehttp https://github.com/killadm/luci-app-fakehttp.git
+src-git luci_app_fakesip https://github.com/killadm/luci-app-fakesip.git
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed

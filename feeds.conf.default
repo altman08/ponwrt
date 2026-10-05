@@ -1,11 +1,9 @@
 # Track altman08 packages/luci on dev (not their default branch).
-# Use luanmuc's Airoha NPU LuCI plugin on main, as in Actions-OpenWrt-AN758X.
 # Other feeds use their remote default branches: openwrt -> master;
 # pbs05 and killadm -> main (verified when configured).
 # ./scripts/feeds update -a pulls new commits; builds are not pinned to a commit.
 src-git packages https://github.com/altman08/immortalwrt-packages.git;dev
 src-git luci https://github.com/altman08/immortalwrt-luci.git;dev
-src-git airoha_npu https://github.com/luanmuc/luci-app-airoha-npu.git;main
 src-git routing https://github.com/openwrt/routing.git
 src-git telephony https://github.com/openwrt/telephony.git
 src-git video https://github.com/openwrt/video.git

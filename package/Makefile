@@ -136,6 +136,7 @@ endef
 
 APK_INSTALL_ARGS = \
 	$(foreach pkg,$(shell cat $(PACKAGE_INSTALL_FILES) 2>/dev/null),$(pkg)$(call GetABISuffix,$(pkg))) \
+	$(PREBUILT_APK_PACKAGES) \
 	base-files=$(shell cat $(STAGING_DIR)/base-files.version) \
 	libc=$(shell cat $(STAGING_DIR)/libc.version) \
 	kernel=$(subst -rc,_rc,$(shell cat $(STAGING_DIR)/kernel.version))
@@ -145,7 +146,7 @@ define apk_install_rootfs
 	$(file >$(TMP_DIR)/apk_install_list,$(APK_INSTALL_ARGS))
 	$(call apk,$(TARGET_DIR)) add --no-cache --initdb --no-scripts --arch $(ARCH_PACKAGES) \
 		--repositories-file /dev/null --repository file://$(PACKAGE_DIR_ALL)/packages.adb \
-		$(if $(CONFIG_SIGNED_PACKAGES),,--allow-untrusted) \
+		$(if $(PREBUILT_APK_PACKAGES),--allow-untrusted,$(if $(CONFIG_SIGNED_PACKAGES),,--allow-untrusted)) \
 		$$(cat $(TMP_DIR)/apk_install_list)
 	rm -rf $(TARGET_DIR)/run
 	$(CP) $(TARGET_DIR) $(TARGET_DIR_ORIG)

@@ -130,12 +130,8 @@ jobs:
           download_apk webd-2026.09.28-r1_openwrt-aarch64_cortex-a53.apk
           download_apk luci-app-homebox-0.260929.30464_openwrt-aarch64_cortex-a53.apk
           download_apk luci-app-webd-1.3-r2_openwrt-aarch64_cortex-a53.apk
-          download_apk luci-app-portal-2.0.0-r23.apk \
-            https://github.com/wrttools/luci-app-portal/releases/download/v2.0.0-r23/luci-app-portal-2.0.0-r23.apk
-          download_apk luci-i18n-portal-zh-cn-2.0.0.apk \
-            https://github.com/wrttools/luci-app-portal/releases/download/v2.0.0-r23/luci-i18n-portal-zh-cn-2.0.0.apk
 
-          run_make package/install PREBUILT_APK_PACKAGES='homebox webd luci-app-homebox luci-app-webd luci-app-portal luci-i18n-portal-zh-cn'
+          run_make package/install PREBUILT_APK_PACKAGES='homebox webd luci-app-homebox luci-app-webd'
           run_make target/install
           run_make package/index
           run_make json_overview_image_info

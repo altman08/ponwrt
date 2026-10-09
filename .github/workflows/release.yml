@@ -109,7 +109,10 @@ jobs:
           download_apk() {
             local pkg="$1"
             local name="${pkg%%-[0-9]*}"
-            local output="bin/packages/aarch64_cortex-a53/packages/${pkg%_openwrt-aarch64_cortex-a53.apk}.apk"
+            local filename="${pkg%.apk}"
+            filename="${filename%_openwrt-aarch64_cortex-a53}"
+            filename="${filename%_aarch64_cortex-a53}"
+            local output="bin/packages/aarch64_cortex-a53/packages/${filename}.apk"
             if find bin/packages bin/targets -name "${name}-*.apk" -print -quit | grep -q .; then
               echo "::error::${name} already has a locally built APK; refusing duplicate packages"
               return 1
@@ -130,8 +133,10 @@ jobs:
           download_apk webd-2026.09.28-r1_openwrt-aarch64_cortex-a53.apk
           download_apk luci-app-homebox-0.260929.30464_openwrt-aarch64_cortex-a53.apk
           download_apk luci-app-webd-1.3-r2_openwrt-aarch64_cortex-a53.apk
+          download_apk luci-app-songloft-1.0-r7_aarch64_cortex-a53.apk
+          download_apk luci-i18n-songloft-zh-cn-0.261009.21366_aarch64_cortex-a53.apk
 
-          run_make package/install PREBUILT_APK_PACKAGES='homebox webd luci-app-homebox luci-app-webd'
+          run_make package/install PREBUILT_APK_PACKAGES='homebox webd luci-app-homebox luci-app-webd luci-app-songloft luci-i18n-songloft-zh-cn'
           run_make target/install
           run_make package/index
           run_make json_overview_image_info

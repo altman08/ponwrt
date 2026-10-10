@@ -12,7 +12,8 @@ src-git pon_userspace https://github.com/pbs05/openwrt-pon-userspace.git
 src-git qwe_luci_app https://github.com/qwe3017/luci-app.git
 src-git luci_app_fakehttp https://github.com/killadm/luci-app-fakehttp.git
 src-git luci_app_fakesip https://github.com/killadm/luci-app-fakesip.git
-src-link shellinabox https://github.com/altman08/luci-app-shellinabox.git
+src-git shellinabox https://github.com/altman08/luci-app-shellinabox.git
+src-git luci_proto_n2n https://github.com/altman08/luci-proto-n2n.git
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed

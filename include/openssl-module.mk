@@ -50,7 +50,7 @@ OPENSSL_UCI="$$$${IPKG_INSTROOT}/etc/config/openssl"
 cat << EOF >> "$$$${OPENSSL_UCI}"
 
 config $(MOD_TYPE) '$(MOD_NAME)'
-	option enabled '$(if $(and $(filter engine,$(MOD_TYPE)),$(filter afalg devcrypto,$(MOD_NAME))),0,1)'
+	option enabled '1'
 EOF
 
 [ -n "$$$${IPKG_INSTROOT}" ] || /etc/init.d/openssl reload

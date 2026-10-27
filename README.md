@@ -74,6 +74,8 @@ make -j$(nproc)
 
 Images are written to `bin/targets/airoha/an7581/` or `bin/targets/airoha/an7583/`.
 
+In GitHub Actions, **Release PonWrt** automatically builds and updates this repository's host tools, toolchain and Go/Rust cache when `use_staging_cache` is enabled (the default). Only the latest cache for each SoC is retained. See the [staging cache guide (Chinese)](docs/staging-cache.md).
+
 ## Install
 
 Use [AN758x-Stock2UBI](https://github.com/pbs05/an758x-stock2ubi) to back up the stock flash and install the UBI layout. Boot images and Web recovery are provided by [AN758x U-Boot](https://github.com/pbs05/uboot-an758x).

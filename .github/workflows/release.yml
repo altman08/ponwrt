@@ -12,6 +12,10 @@ on:
         required: true
         default: true
         type: boolean
+      use_staging_cache:
+        description: Reuse and automatically update the staging cache
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -26,6 +30,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     environment: release
+    permissions:
+      contents: write
+      actions: write
+    # Serialize each SoC across releases so cache uploads and pruning cannot race.
+    concurrency:
+      group: ponwrt-build-${{ matrix.target }}
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:
@@ -36,26 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Free build space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-          sudo apt-get clean
-
       - name: Install build dependencies
         env:
           DEBIAN_FRONTEND: noninteractive
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            asciidoc autoconf automake autopoint binutils bison build-essential \
-            bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk \
-            gettext git g++-multilib gcc-multilib gperf help2man intltool jq \
-            libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
-            libmpfr-dev libncurses-dev libpython3-dev libreadline-dev libssl-dev \
-            libtool libyaml-dev lld llvm ninja-build p7zip-full patch pkgconf \
-            python3 python3-docutils python3-pip python3-ply python3-pyelftools \
-            qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo \
-            uglifyjs unzip wget xmlto xxd zlib1g-dev zstd
+        run: bash scripts/ci-build-dependencies.sh
 
       - name: Cache downloads
         uses: actions/cache@v4
@@ -87,8 +82,92 @@ jobs:
             configs/release.config > .config
           make defconfig
 
+      - name: Generate staging cache key
+        id: cache-key
+        if: inputs.use_staging_cache
+        run: python3 scripts/staging-cache.py fingerprint
+
       - name: Download sources
         run: make download -j"$(nproc)"
+
+      - name: Restore staging archive from Actions
+        id: cache_restore
+        if: inputs.use_staging_cache
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:
+          path: .staging-cache
+          key: ${{ steps.cache-key.outputs.key }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ steps.cache-key.outputs.key }}-
+
+      - name: Restore and verify staging cache
+        id: staging
+        if: inputs.use_staging_cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/staging-cache.py restore --release
+
+      - name: Build missing host tools, toolchain, Go and Rust
+        id: cache_build
+        if: inputs.use_staging_cache && steps.staging.outputs.restored != 'true'
+        continue-on-error: true
+        run: python3 scripts/staging-cache.py build
+
+      - name: Pack verified staging cache
+        id: cache_pack
+        if: inputs.use_staging_cache && steps.cache_build.outcome == 'success'
+        continue-on-error: true
+        run: python3 scripts/staging-cache.py pack
+
+      - name: Save staging archive to Actions
+        id: cache_save
+        if: >-
+          inputs.use_staging_cache
+          && (steps.staging.outputs.restored == 'true' || steps.cache_pack.outcome == 'success')
+          && steps.staging.outputs.source != 'actions'
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: .staging-cache
+          key: ${{ steps.cache-key.outputs.key }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save latest staging cache to Release
+        id: cache_publish
+        if: >-
+          inputs.use_staging_cache
+          && (steps.staging.outputs.restored == 'true' || steps.cache_pack.outcome == 'success')
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/staging-cache.py publish
+
+      - name: Keep only the latest Actions staging cache for this SoC
+        if: >-
+          inputs.use_staging_cache
+          && (steps.staging.outputs.source == 'actions' || steps.cache_save.outcome == 'success')
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP_KEY: ${{ steps.staging.outputs.source == 'actions' && steps.cache_restore.outputs.cache-matched-key || format('{0}-{1}-{2}', steps.cache-key.outputs.key, github.run_id, github.run_attempt) }}
+        run: python3 scripts/staging-cache.py prune-actions --keep-key "$KEEP_KEY"
+
+      - name: Staging cache summary
+        if: always() && inputs.use_staging_cache
+        env:
+          CACHE_KEY: ${{ steps.cache-key.outputs.key }}
+          RESTORED: ${{ steps.staging.outputs.restored || 'false' }}
+          SOURCE: ${{ steps.staging.outputs.source || 'none' }}
+          REBUILT: ${{ steps.cache_build.outcome == 'success' }}
+          PUBLISHED: ${{ steps.cache_publish.outputs.published || 'false' }}
+        run: |
+          {
+            echo "### Staging cache: ${{ matrix.target }}"
+            echo "- Key: \`$CACHE_KEY\`"
+            echo "- Restored: $RESTORED ($SOURCE)"
+            echo "- Rebuilt: $REBUILT"
+            echo "- Release backup available: $PUBLISHED"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build ${{ matrix.target }} with prebuilt APKs
         env:

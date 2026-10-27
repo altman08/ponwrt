@@ -69,6 +69,8 @@ make -j$(nproc)
 
 固件位于 `bin/targets/airoha/an7581/` 或 `bin/targets/airoha/an7583/`。
 
+GitHub Actions 的 **Release PonWrt** 默认开启 `use_staging_cache`，未命中时自动构建并保存本仓库自己的工具链和 Go/Rust 缓存，每个平台只保留最新一份。开启、更新和关闭步骤见 [Staging 缓存说明](docs/staging-cache.md)。
+
 ## 刷入
 
 使用 [AN758x-Stock2UBI](https://github.com/pbs05/an758x-stock2ubi) 备份原厂闪存并安装 UBI 布局。启动镜像和 Web 恢复界面由 [AN758x U-Boot](https://github.com/pbs05/uboot-an758x) 提供。

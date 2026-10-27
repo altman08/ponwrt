@@ -16,6 +16,8 @@ src-git shellinabox https://github.com/altman08/luci-app-shellinabox.git
 src-git quarkdrive https://github.com/altman08/luci-app-quarkdrive-webdav.git
 src-git virtualhere https://github.com/altman08/luci-app-virtualhere.git
 src-git luci_proto_n2n https://github.com/altman08/luci-proto-n2n.git
+src-git --root=openwrt songloft https://github.com/songloft-org/songloft-for-router.git
+src-git picoclaw https://github.com/altman08/luci-app-picoclaw.git;dev
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed

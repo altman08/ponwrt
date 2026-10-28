@@ -145,6 +145,34 @@ class StagingCacheTest(unittest.TestCase):
         # OpenWrt's mtime-based .prepared hash must also survive a new checkout.
         self.assertEqual(initial_stamp_hash, prepared_hash())
 
+    def test_busybox_config_changes_keep_key(self):
+        config = (self.root / ".config").read_text()
+        initial = cache.context(self.root)["key"]
+        for busybox in (
+                "CONFIG_BUSYBOX_CUSTOM=y\nCONFIG_BUSYBOX_CONFIG_AWK=y\n",
+                "CONFIG_BUSYBOX_CUSTOM=y\nCONFIG_BUSYBOX_CONFIG_SED=y\n"
+                "CONFIG_BUSYBOX_CONFIG_FEATURE_EDITING_HISTORY=256\n",
+                "CONFIG_BUSYBOX_CUSTOM=y\nCONFIG_BUSYBOX_CONFIG_SED=y\n"
+                "CONFIG_BUSYBOX_CONFIG_FEATURE_EDITING_HISTORY=512\n",
+                "CONFIG_BUSYBOX_DEFAULT_AWK=y\n",
+                ""):
+            with self.subTest(busybox=busybox):
+                self.write(".config", config + busybox)
+                self.assertEqual(initial, cache.context(self.root)["key"])
+
+    def test_dropbear_and_openssl_config_changes_keep_key(self):
+        config = (self.root / ".config").read_text()
+        initial = cache.context(self.root)["key"]
+        for options in (
+                "CONFIG_DROPBEAR_SCP=y\nCONFIG_DROPBEAR_AUTH_TIMEOUT=300\n",
+                "CONFIG_DROPBEAR_AUTH_TIMEOUT=600\n",
+                "CONFIG_OPENSSL_WITH_TLS13=y\nCONFIG_OPENSSL_ENGINE=y\n",
+                "CONFIG_OPENSSL_WITH_TLS13=y\n",
+                ""):
+            with self.subTest(options=options):
+                self.write(".config", config + options)
+                self.assertEqual(initial, cache.context(self.root)["key"])
+
     def test_host_patches_and_abi_options_invalidate_cache(self):
         initial = cache.context(self.root)["key"]
         patch = self.write("toolchain/gcc/patches/fix.patch", "changed compiler patch\n")

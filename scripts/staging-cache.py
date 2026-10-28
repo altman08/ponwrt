@@ -109,7 +109,10 @@ def context(root):
 
     # Keep build options conservatively: packages can introduce their own host
     # options (e.g. Python), so a toolchain-only allowlist would miss inputs.
+    # BusyBox, Dropbear and OpenSSL options affect target packages, which are
+    # not in this cache; host crypto tools use separate build definitions.
     ignored = ("CONFIG_PACKAGE_", "CONFIG_DEFAULT_", "CONFIG_MODULE_DEFAULT_",
+               "CONFIG_BUSYBOX_", "CONFIG_DROPBEAR_", "CONFIG_OPENSSL_",
                "CONFIG_VERSION_", "CONFIG_VERSIONOPT",
                "CONFIG_TARGET_DEVICE", "CONFIG_TARGET_ROOTFS", "CONFIG_TARGET_INITRAMFS",
                "CONFIG_TARGET_SQUASHFS", "CONFIG_TARGET_UBIFS", "CONFIG_TARGET_MULTI_PROFILE",

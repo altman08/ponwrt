@@ -13,9 +13,12 @@ src-git qwe_luci_app https://github.com/qwe3017/luci-app.git
 src-git luci_app_fakehttp https://github.com/killadm/luci-app-fakehttp.git
 src-git luci_app_fakesip https://github.com/killadm/luci-app-fakesip.git
 src-git shellinabox https://github.com/altman08/luci-app-shellinabox.git
+src-git udp2raw_ultra https://github.com/altman08/luci-app-udp2raw-ultra.git
+src-git udpspeeder https://github.com/altman08/luci-app-udpspeeder.git
 src-git quarkdrive https://github.com/altman08/luci-app-quarkdrive-webdav.git
 src-git virtualhere https://github.com/altman08/luci-app-virtualhere.git
 src-git luci_proto_n2n https://github.com/altman08/luci-proto-n2n.git
+src-git tinyfecproto https://github.com/altman08/luci-proto-tinyfecvpn.git
 src-git --root=openwrt songloft https://github.com/songloft-org/songloft-for-router.git
 src-git picoclaw https://github.com/altman08/luci-app-picoclaw.git;dev
 #src-git targets https://github.com/openwrt/targets.git

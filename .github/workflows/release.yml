@@ -7,6 +7,18 @@ on:
         description: Release tag
         required: true
         type: string
+      an7581:
+        description: Build AN7581 (select at least one SoC)
+        type: boolean
+        default: true
+      an7583:
+        description: Build AN7583 (select at least one SoC)
+        type: boolean
+        default: false
+      recovery:
+        description: Build recovery.itb images
+        type: boolean
+        default: false
       prerelease:
         description: Mark as prerelease
         required: true
@@ -25,8 +37,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  prepare:
+    name: Validate inputs and select targets
+    runs-on: ubuntu-24.04
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - name: Require at least one SoC
+        id: targets
+        env:
+          BUILD_AN7581: ${{ inputs.an7581 }}
+          BUILD_AN7583: ${{ inputs.an7583 }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          targets = [
+              target for target in ("an7581", "an7583")
+              if os.environ[f"BUILD_{target.upper()}"] == "true"
+          ]
+          if not targets:
+              print("::error::Select at least one SoC: AN7581 or AN7583.")
+              sys.exit(1)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"targets={json.dumps(targets)}\n")
+          PY
+
   build:
     name: Build ${{ matrix.target }}
+    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     environment: release
@@ -40,9 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - an7581
-          - an7583
+        target: ${{ fromJSON(needs.prepare.outputs.targets) }}
 
     steps:
       - uses: actions/checkout@v6
@@ -76,10 +115,15 @@ jobs:
           fi
 
       - name: Configure ${{ matrix.target }}
+        env:
+          BUILD_RECOVERY: ${{ inputs.recovery }}
         run: |
           ./scripts/kconfig.pl + \
             "configs/${{ matrix.target }}.config" \
             configs/release.config > .config
+          if [ "$BUILD_RECOVERY" != true ]; then
+            sed -i 's/^CONFIG_TARGET_ROOTFS_INITRAMFS=y$/# CONFIG_TARGET_ROOTFS_INITRAMFS is not set/' .config
+          fi
           make defconfig
 
       - name: Generate staging cache key

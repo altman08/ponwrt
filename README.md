@@ -74,6 +74,8 @@ make -j$(nproc)
 
 Images are written to `bin/targets/airoha/an7581/` or `bin/targets/airoha/an7583/`.
 
+In GitHub Actions, **Release PonWrt** lets you select `an7581` and `an7583` independently. Only `an7581` is selected by default, and at least one SoC is required. The `recovery` option is off by default, disabling initramfs compilation so no `recovery.itb` is built. Enable it to build both recovery and sysupgrade images.
+
 In GitHub Actions, **Release PonWrt** automatically builds and updates this repository's host tools, toolchain and Go/Rust cache when `use_staging_cache` is enabled (the default). Only the latest cache for each SoC is retained. See the [staging cache guide (Chinese)](docs/staging-cache.md).
 
 ## Install

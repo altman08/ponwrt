@@ -69,6 +69,8 @@ make -j$(nproc)
 
 固件位于 `bin/targets/airoha/an7581/` 或 `bin/targets/airoha/an7583/`。
 
+GitHub Actions 的 **Release PonWrt** 可分别勾选 `an7581` 和 `an7583`，默认只选 `an7581`，至少需要选择一个芯片。`recovery` 默认不勾选，此时关闭 initramfs 编译，不生成 `recovery.itb`；勾选后同时编译 recovery 和 sysupgrade 固件。
+
 GitHub Actions 的 **Release PonWrt** 默认开启 `use_staging_cache`，未命中时自动构建并保存本仓库自己的工具链和 Go/Rust 缓存，每个平台只保留最新一份。开启、更新和关闭步骤见 [Staging 缓存说明](docs/staging-cache.md)。
 
 ## 刷入

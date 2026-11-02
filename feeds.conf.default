@@ -21,6 +21,7 @@ src-git luci_proto_n2n https://github.com/altman08/luci-proto-n2n.git
 src-git tinyfecproto https://github.com/altman08/luci-proto-tinyfecvpn.git
 src-git --root=openwrt songloft https://github.com/songloft-org/songloft-for-router.git
 src-git picoclaw https://github.com/altman08/luci-app-picoclaw.git;dev
+src-git pushbot https://github.com/zzsj0928/luci-app-pushbot.git
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed

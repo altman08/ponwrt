@@ -35,5 +35,6 @@ git-src
 .cproject
 .ccache
 /.staging-cache
+.sccache
 .vscode*
 feed/

@@ -38,3 +38,4 @@ git-src
 .sccache
 .vscode*
 feed/
+artifacts
